@@ -43,7 +43,9 @@ def cleanup_session_data():
 # Header
 col1, col2, col3 = st.columns([3, 1, 1])
 with col1:
-    st.header("PairD 2", divider="gray", anchor=False)
+    # Dynamic header based on selected model
+    header_text = "PairD 1" if st.session_state.selected_model == "GPT 3.5" else "PairD 2"
+    st.header(header_text, divider="gray", anchor=False)
 with col2:
     # Model selection
     selected_model = st.selectbox(
