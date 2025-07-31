@@ -1,19 +1,11 @@
-# 💬 Chatbot template
+# PairD 2
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+### How to run
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
+1.  ```
+    pip install -r requirements.txt
+    ```
 
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+2.  ```
+    streamlit run streamlit_app.py
+    ```

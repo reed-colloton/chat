@@ -13,102 +13,11 @@ import prompts
 st.set_page_config(
     page_title="PairD 2",
     page_icon="🤖",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
-# Custom CSS for professional styling
-st.markdown("""
-<style>
-    /* Sticky header container */
-    .sticky-header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e5e7eb;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    /* Main chat interface styling */
-    .main-header {
-        text-align: center;
-        color: #2e3440;
-        font-size: 1.8rem;
-        font-weight: 600;
-        margin-bottom: 0;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #6b7280;
-        font-size: 1.1rem;
-        margin-bottom: 0;
-    }
-
-    /* Add top padding to main content to account for sticky header */
-    .main-content {
-        padding-top: 80px;
-    }
-
-    /* Chat message styling */
-    .stChatMessage {
-        border-radius: 15px;
-        margin: 10px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    /* Sidebar styling */
-    .sidebar-content {
-        background-color: #f8fafc;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 1rem 0;
-    }
-
-    /* Button styling */
-    .stButton > button {
-        border-radius: 20px;
-        border: none;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    /* Hide Streamlit footer and menu */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-
-    /* Chat input styling */
-    .stChatInputContainer {
-        border-radius: 25px;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Header
-st.markdown("""
-<div class="sticky-header">
-    <h1 class="main-header">🤖 PairD 2</h1>
-</div>
-""", unsafe_allow_html=True)
-
-# Main content wrapper
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
+st.header("PairD 2", divider="gray", anchor=False)
 
 # Configuration
 azure_api_key = os.getenv("AZURE_API_KEY")
@@ -116,13 +25,15 @@ azure_endpoint = "https://reedc-mdrjnjlt-swedencentral.cognitiveservices.azure.c
 
 # Available models
 AVAILABLE_MODELS = {
-    "GPT-4.1": "gpt-4.1",
-    "o4-mini": "o4-mini"
+    "GPT 4o": "gpt-4o",
+    "GPT 4.1": "gpt-4.1",
+    "GPT 3.5": "gpt-35-turbo",
+    "o4 mini": "o4-mini",
 }
 
 # Initialize model selection in session state
 if "selected_model" not in st.session_state:
-    st.session_state.selected_model = "GPT-4.1"
+    st.session_state.selected_model = "GPT 4o"
 
 # Get current model
 model = AVAILABLE_MODELS[st.session_state.selected_model]
@@ -256,7 +167,7 @@ def export_chat_as_text():
 with st.sidebar:
     # Model selection
     selected_model = st.selectbox(
-        "Choose a use-case",
+        "",
         options=list(AVAILABLE_MODELS.keys()),
         index=list(AVAILABLE_MODELS.keys()).index(st.session_state.selected_model),
         key="model_selector"
@@ -340,14 +251,14 @@ with chat_container:
     for i, message in enumerate(st.session_state.messages):
         if message["role"] == "user":
             with st.chat_message("user", avatar=":material/account_circle:"):
-                st.markdown(f"**You:** {message['content']}")
+                st.markdown(f"{message['content']}")
         else:
             with st.chat_message("assistant", avatar=":material/auto_awesome:"):
                 st.markdown(message["content"])
 
 # Create a chat input field to allow the user to enter a message. This will display
 # automatically at the bottom of the page.
-if prompt := st.chat_input("Type your message here...", key="chat_input"):
+if prompt := st.chat_input("Ask anything", key="chat_input"):
 
     # Store and display the current prompt.
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -357,7 +268,7 @@ if prompt := st.chat_input("Type your message here...", key="chat_input"):
 
     # Display user message
     with st.chat_message("user", avatar="👤"):
-        st.markdown(f"**You:** {prompt}")
+        st.markdown(f"{prompt}")
 
     # Generate and display assistant response
     with st.chat_message("assistant", avatar="🤖"):
@@ -396,6 +307,3 @@ if prompt := st.chat_input("Type your message here...", key="chat_input"):
 
                 # Save session data even after errors
                 save_session_data()
-
-# Close main content wrapper
-st.markdown('</div>', unsafe_allow_html=True)
