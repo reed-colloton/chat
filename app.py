@@ -53,8 +53,8 @@ with col2:
         key="model_selector"
     )
 with col3:
-    st.markdown('<div style="display: flex; align-items: flex-end; height: 100%; margin-top: 1.5rem;">', unsafe_allow_html=True)
-    if st.button("Clear chat", help="Clear chat"):
+    st.markdown('<div style="display: flex; align-items: flex-end; height: 100%; margin-top: 1.7rem;">', unsafe_allow_html=True)
+    if st.button(":material/add:", help="Clear chat"):
         st.session_state.messages = []
         # Clear download data when clearing chat
         if hasattr(st.session_state, 'download_data'):
