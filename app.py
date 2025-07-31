@@ -16,24 +16,64 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# Header
-st.header("PairD 2", divider="gray", anchor=False)
-
-# Configuration
-azure_api_key = os.getenv("AZURE_API_KEY")
-azure_endpoint = "https://reedc-mdrjnjlt-swedencentral.cognitiveservices.azure.com/"
-
 # Available models
 AVAILABLE_MODELS = {
+    "Auto": "model-router",
+    "o4 mini": "o4-mini",
     "GPT 4o": "gpt-4o",
     "GPT 4.1": "gpt-4.1",
     "GPT 3.5": "gpt-35-turbo",
-    "o4 mini": "o4-mini",
 }
 
 # Initialize model selection in session state
 if "selected_model" not in st.session_state:
-    st.session_state.selected_model = "GPT 4o"
+    st.session_state.selected_model = "Auto"
+
+
+def cleanup_session_data():
+    """Clean up session data file"""
+    try:
+        session_file = get_session_file_path()
+        if os.path.exists(session_file):
+            os.remove(session_file)
+        return True
+    except Exception:
+        return False
+
+# Header
+col1, col2, col3 = st.columns([3, 1, 1])
+with col1:
+    st.header("PairD 2", divider="gray", anchor=False)
+with col2:
+    # Model selection
+    selected_model = st.selectbox(
+        "",
+        options=list(AVAILABLE_MODELS.keys()),
+        index=list(AVAILABLE_MODELS.keys()).index(st.session_state.selected_model),
+        key="model_selector"
+    )
+with col3:
+    st.markdown('<div style="display: flex; align-items: flex-end; height: 100%; margin-top: 1.5rem;">', unsafe_allow_html=True)
+    if st.button("Clear chat", help="Clear chat"):
+        st.session_state.messages = []
+        # Clear download data when clearing chat
+        if hasattr(st.session_state, 'download_data'):
+            del st.session_state.download_data
+        if hasattr(st.session_state, 'export_text'):
+            del st.session_state.export_text
+        # Clear session persistence file
+        cleanup_session_data()
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Update session state if model changed
+    if selected_model != st.session_state.selected_model:
+        st.session_state.selected_model = selected_model
+        st.rerun()
+
+# Configuration
+azure_api_key = os.getenv("AZURE_API_KEY")
+azure_endpoint = "https://reedc-mdrjnjlt-swedencentral.cognitiveservices.azure.com/"
 
 # Get current model
 model = AVAILABLE_MODELS[st.session_state.selected_model]
@@ -95,16 +135,6 @@ def load_session_data():
         st.session_state.load_error = f"Load failed: {str(e)}"
         return [], 0
 
-def cleanup_session_data():
-    """Clean up session data file"""
-    try:
-        session_file = get_session_file_path()
-        if os.path.exists(session_file):
-            os.remove(session_file)
-        return True
-    except Exception:
-        return False
-
 # Helper functions for chat history
 def save_chat_history():
     """Save current chat history to a JSON file"""
@@ -162,35 +192,6 @@ def export_chat_as_text():
 
         return text_content
     return None
-
-# Sidebar configuration
-with st.sidebar:
-    # Model selection
-    selected_model = st.selectbox(
-        "",
-        options=list(AVAILABLE_MODELS.keys()),
-        index=list(AVAILABLE_MODELS.keys()).index(st.session_state.selected_model),
-        key="model_selector"
-    )
-
-    # Update session state if model changed
-    if selected_model != st.session_state.selected_model:
-        st.session_state.selected_model = selected_model
-        st.rerun()
-
-    # Add some spacing
-    st.markdown("---")
-
-    if st.button("🗑️ Clear Chat", use_container_width=True):
-        st.session_state.messages = []
-        # Clear download data when clearing chat
-        if hasattr(st.session_state, 'download_data'):
-            del st.session_state.download_data
-        if hasattr(st.session_state, 'export_text'):
-            del st.session_state.export_text
-        # Clear session persistence file
-        cleanup_session_data()
-        st.rerun()
 
 
 
@@ -267,11 +268,11 @@ if prompt := st.chat_input("Ask anything", key="chat_input"):
     save_session_data()
 
     # Display user message
-    with st.chat_message("user", avatar="👤"):
+    with st.chat_message("user", avatar=":material/account_circle:"):
         st.markdown(f"{prompt}")
 
     # Generate and display assistant response
-    with st.chat_message("assistant", avatar="🤖"):
+    with st.chat_message("assistant", avatar=":material/auto_awesome:"):
         with st.spinner("Thinking..."):
             try:
                 # Generate a response using the OpenAI API.
