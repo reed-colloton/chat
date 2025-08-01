@@ -5,7 +5,8 @@ import pickle
 import tempfile
 
 import streamlit as st
-from openai import AzureOpenAI
+from dotenv import load_dotenv
+from openai import AzureOpenAI, OpenAI
 
 import prompts
 
@@ -28,8 +29,22 @@ AVAILABLE_MODELS = {
 
 # Initialize model selection in session state
 if "selected_model" not in st.session_state:
-    st.session_state.selected_model = "Auto"
+    st.session_state.selected_model = "GPT 4o"
 
+
+# Session persistence functions
+def get_session_file_path():
+    """Get the path for the session persistence file"""
+    temp_dir = tempfile.gettempdir()
+
+    # Use a more stable session ID based on Streamlit's session info
+    if 'session_id' not in st.session_state:
+        # Create a persistent session ID that survives page refreshes
+        session_hash = hash(str(id(st.session_state))) % 1000000
+        st.session_state.session_id = f"paird_chat_{session_hash}"
+
+    session_file = os.path.join(temp_dir, f"{st.session_state.session_id}.pkl")
+    return session_file
 
 def cleanup_session_data():
     """Clean up session data file"""
@@ -74,27 +89,6 @@ with col3:
         st.session_state.selected_model = selected_model
         st.rerun()
 
-# Configuration
-azure_api_key = os.getenv("AZURE_API_KEY")
-azure_endpoint = "https://reedc-mdrjnjlt-swedencentral.cognitiveservices.azure.com/"
-
-# Get current model
-model = AVAILABLE_MODELS[st.session_state.selected_model]
-api_version = "2024-12-01-preview"
-
-# Session persistence functions
-def get_session_file_path():
-    """Get the path for the session persistence file"""
-    temp_dir = tempfile.gettempdir()
-
-    # Use a more stable session ID based on Streamlit's session info
-    if 'session_id' not in st.session_state:
-        # Create a persistent session ID that survives page refreshes
-        session_hash = hash(str(id(st.session_state))) % 1000000
-        st.session_state.session_id = f"paird_chat_{session_hash}"
-
-    session_file = os.path.join(temp_dir, f"{st.session_state.session_id}.pkl")
-    return session_file
 
 def save_session_data():
     """Save session data to temporary file"""
@@ -197,17 +191,22 @@ def export_chat_as_text():
     return None
 
 
+# Get current model
+model = AVAILABLE_MODELS[st.session_state.selected_model]
+api_version = "2024-12-01-preview"
 
-# Check for API key
-if not azure_api_key:
-    st.error("🔑 **Azure API Key not found!** Please set the AZURE_API_KEY environment variable.")
-    st.stop()
+load_dotenv()
 
-# Create an OpenAI client with error handling
-try:
+azure_api_key = os.getenv("AZURE_API_KEY")
+azure_endpoint = "https://reedc-mdrjnjlt-swedencentral.cognitiveservices.azure.com/"
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+if azure_api_key:
     client = AzureOpenAI(api_key=azure_api_key, azure_endpoint=azure_endpoint, api_version=api_version)
-except Exception as e:
-    st.error(f"❌ **Failed to initialize OpenAI client:** {str(e)}")
+elif openai_api_key:
+    client = OpenAI(api_key=openai_api_key)
+else:
+    st.error("❌ **API key not found!** Please set the OPENAI_API_KEY or AZURE_API_KEY environment variable.")
     st.stop()
 
 # Create a session state variable to store the chat messages. This ensures that the
