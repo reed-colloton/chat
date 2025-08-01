@@ -7,7 +7,7 @@ import tempfile
 import streamlit as st
 from openai import AzureOpenAI
 
-import app.prompts as prompts
+import prompts
 
 # Configure page
 st.set_page_config(
