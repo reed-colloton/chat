@@ -10,6 +10,7 @@ from openai import AzureOpenAI, OpenAI
 
 import prompts
 
+
 # Configure page
 st.set_page_config(
     page_title="PairD 2",
@@ -23,6 +24,7 @@ AVAILABLE_MODELS = {
     "o4 mini": "o4-mini",
     "GPT 4o": "gpt-4o",
     "GPT 4.1": "gpt-4.1",
+    "GPT 4": "gpt-4",
     "GPT Nano": "gpt-4.1-nano",
     "GPT 3.5": "gpt-35-turbo",
 }
@@ -65,7 +67,7 @@ with col1:
 with col2:
     # Model selection
     selected_model = st.selectbox(
-        "",
+        " ",
         options=list(AVAILABLE_MODELS.keys()),
         index=list(AVAILABLE_MODELS.keys()).index(st.session_state.selected_model),
         key="model_selector"
