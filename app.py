@@ -22,6 +22,7 @@ AVAILABLE_MODELS = {
     "o4 mini": "o4-mini",
     "GPT 4o": "gpt-4o",
     "GPT 4.1": "gpt-4.1",
+    "GPT Nano": "gpt-4.1-nano",
     "GPT 3.5": "gpt-35-turbo",
 }
 
