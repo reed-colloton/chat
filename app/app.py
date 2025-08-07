@@ -7,6 +7,7 @@ import tempfile
 import streamlit as st
 from dotenv import load_dotenv
 from openai import AzureOpenAI, OpenAI
+from streamlit_shortcuts import add_shortcuts
 
 import prompts
 
@@ -31,7 +32,7 @@ AVAILABLE_MODELS = {
 
 # Initialize model selection in session state
 if "selected_model" not in st.session_state:
-    st.session_state.selected_model = "GPT 4o"
+    st.session_state.selected_model = "GPT 4.1"
 
 
 # Session persistence functions
@@ -74,7 +75,7 @@ with col2:
     )
 with col3:
     st.markdown('<div style="display: flex; align-items: flex-end; height: 100%; margin-top: 1.7rem;">', unsafe_allow_html=True)
-    if st.button(":material/add:", help="Clear chat"):
+    if st.button(":material/add:", help="New chat `arrowright`", key="clear_chat_btn"):
         st.session_state.messages = []
         # Clear download data when clearing chat
         if hasattr(st.session_state, 'download_data'):
@@ -312,3 +313,8 @@ if prompt := st.chat_input("Ask anything", key="chat_input"):
 
                 # Save session data even after errors
                 save_session_data()
+
+# Add keyboard shortcut for clear chat button (at the very end)
+add_shortcuts(
+    clear_chat_btn="arrowright",     # Press 'n' to clear chat
+)
