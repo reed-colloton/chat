@@ -14,25 +14,27 @@ import prompts
 
 # Configure page
 st.set_page_config(
-    page_title="PairD 2",
+    page_title="GPT-Reed",
     page_icon="🤖",
     initial_sidebar_state="auto"
 )
 
 # Available models
 AVAILABLE_MODELS = {
-    "Auto": "model-router",
+    # "Auto": "model-router",
     "o4 mini": "o4-mini",
-    "GPT 4o": "gpt-4o",
+    "GPT 5": "gpt-5-chat",
     "GPT 4.1": "gpt-4.1",
-    "GPT 4": "gpt-4",
-    "GPT Nano": "gpt-4.1-nano",
-    "GPT 3.5": "gpt-35-turbo",
+    "GPT 4o": "gpt-4o",
+    # "GPT 4": "gpt-4",
+    "GPT OSS": "gpt-oss-120b",
+    # "GPT Nano": "gpt-4.1-nano",
+    # "GPT 3.5": "gpt-35-turbo",
 }
 
 # Initialize model selection in session state
 if "selected_model" not in st.session_state:
-    st.session_state.selected_model = "GPT 4.1"
+    st.session_state.selected_model = "GPT 5"
 
 
 # Session persistence functions
@@ -63,8 +65,7 @@ def cleanup_session_data():
 col1, col2, col3 = st.columns([3, 1, 1])
 with col1:
     # Dynamic header based on selected model
-    header_text = "PairD 1" if st.session_state.selected_model == "GPT 3.5" else "PairD 2"
-    st.header(header_text, divider="gray", anchor=False)
+    st.header("GPT-Reed", divider="gray", anchor=False)
 with col2:
     # Model selection
     selected_model = st.selectbox(
